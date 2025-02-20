@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终端使用指南</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f1f1; /* 更柔和的背景色 */
+            margin: 0;
+            padding: 0;
+            line-height: 1.8; /* 调整行高 */
+        }
+        header {
+            background-color: #34495e; /* 更柔和的灰蓝色 */
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2rem; /* 增大标题字体 */
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 1.6rem; /* 增大小标题字体 */
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p, ul {
+            font-size: 1.1rem; /* 调整段落文字的字号 */
+            line-height: 1.8; /* 增加行高，提升可读性 */
+        }
+        pre {
+            background-color: #ecf0f1; /* 淡灰色背景 */
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace; /* 使用等宽字体 */
+            font-size: 1.1rem; /* 调整代码字体大小 */
+            margin-bottom: 20px;
+            white-space: pre-wrap; /* 自动换行 */
+        }
+        ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ecf0f1; /* 淡灰色 */
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        .step {
+            margin-bottom: 25px;
+        }
+        .step p {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa; /* 更柔和的浅色背景 */
+            border-left: 4px solid #2980b9;
+            padding-left: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .highlight p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>终端使用指南</h1>
+</header>
+
+<main>
+
+    <div class="step">
+        <h2>1. 修改终端默认配置色</h2>
+        <pre><code>"terminal.foreground": "#C0C0C0", // 默认文本颜色
+"terminal.background": "#004B5D", // 墨绿色背景
+"terminalCursor.foreground": "#FFFFFF", // 设置光标前景色 </code></pre>
+    </div>
+
+    <div class="step">
+        <h2>2. 安装 zsh</h2>
+        <pre><code>sudo apt update && sudo apt install zsh</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>3. 切换到 zsh</h2>
+        <pre><code>chsh -s $(which zsh)</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>4. 查看是否切换成功</h2>
+        <pre><code>echo $SHELL</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>5. 安装 git</h2>
+        <pre><code>sudo apt install git-all</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>6. 安装 fzf</h2>
+        <pre><code>sudo apt update && sudo apt install fzf </code></pre>
+    </div>
+
+    <div class="step">
+        <h2>7. 安装插件管理器zinit</h2>
+        <pre><code>bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"</code></pre>
+        <p>zinit安装目录：~/.local/share/zinit/</p>
+        <p>zinit创建了 ~/.zshrc 文件</p>
+    </div>
+
+
+    <div class="step">
+        <h2>8. 通过zinit安装插件并设置全局代理</h2>
+        <p>编辑配置文件 code ~/.zshrc , 添加以下内容：</p>
+        <pre><code>
+# 所有不指定代理类型的请求（如果没有单独配置 HTTP/HTTPS 代理）将通过 SOCKS5代理,走127.0.0.1:1080。
+export all_proxy="socks5://127.0.0.1:1080"
+
+# 任何通过HTTP 协议发出的请求都会通过代理服务器127.0.0.1:8080
+export http_proxy="http://127.0.0.1:8080"
+
+# 任何通过HTTPS 协议发出的请求也会通过相同的代理服务器 127.0.0.1:8080
+export https_proxy="http://127.0.0.1:8080"
+
+zinit light zsh-users/zsh-autosuggestions
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light agkozak/zsh-z
+
+# 安装 powerlevel10k 主题
+zinit light romkatv/powerlevel10k
+
+# 修改zsh-autosuggestions插件的接受建议并执行的快捷键为 Alt+E
+bindkey '^[e' autosuggest-accept
+        </code></pre>
+    </div>
+
+    <div class="step">
+        <h2>9. 重新加载配置文件</h2>
+        <pre><code>source ~/.zshrc</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>10. zinit 使用指南</h2>
+        <ul>
+            <li><strong>zinit light：</strong> 异步加载插件，适合不需要立即生效的插件，启动过程更快。</li>
+            <li><strong>zinit load：</strong> 同步加载插件，适合需要立即生效的插件，可能会稍微影响启动速度。</li>
+            <li><strong>zinit version：</strong> 查看 zinit 版本。</li>
+            <li><strong>zinit help：</strong> 查看帮助信息。</li>
+            <li><strong>zinit zstatus：</strong> 查看插件整体状态。</li>
+            <li><strong>zinit unload：</strong> 卸载通过 zinit load 加载的插件。</li>
+            <li><strong>zinit ice：</strong> 定制插件的加载和安装方式。</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h2>11. 重新配置 powerlevel10k</h2>
+        <pre><code>p10k configure</code></pre>
+    </div>
+
+
+    <div class="step">
+        <h2>12. 更改apt软件源</h2>
+        <pre><code>sudo code /etc/apt/sources.list</code></pre>
+        <pre><code>deb http://deb.debian.org/debian/ stable main contrib non-free
+deb-src http://deb.debian.org/debian/ stable main contrib non-free
+
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+deb-src https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian-security/ bullseye-security main contrib non-free
+deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib non-free</code></pre>
+    </div>
+
+
+    <div class="step">
+        <h2>13. 更改pip软件源</h2>
+        <pre><code>code ~/.pip/pip.conf</code></pre>
+        <p>pip.conf 文件中，不能同时存在多个 index-url 配置项。下面两个保留一个就行</p>
+        <pre><code>[global]
+index-url = https://pypi.org/simple           #官方源</code></pre>
+<pre><code>[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple           #清华源</code></pre>
+    
+
+<pre><code>pip config list</code></pre>
+    </div>
+
+
+
+
+
+
+
+
+
+</main>
+
+<footer>
+    <p>© 2025 终端项目</p>
+</footer>
+
+</body>
+</html>

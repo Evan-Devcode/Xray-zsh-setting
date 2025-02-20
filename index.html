@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xray 使用指南</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f1f1; /* 更柔和的背景色 */
+            margin: 0;
+            padding: 0;
+            line-height: 1.8; /* 调整行高 */
+        }
+        header {
+            background-color: #34495e; /* 更柔和的灰蓝色 */
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2rem; /* 增大标题字体 */
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 1.6rem; /* 增大小标题字体 */
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p, ul {
+            font-size: 1.1rem; /* 调整段落文字的字号 */
+            line-height: 1.8; /* 增加行高，提升可读性 */
+        }
+        pre {
+            background-color: #ecf0f1; /* 淡灰色背景 */
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace; /* 使用等宽字体 */
+            font-size: 1.1rem; /* 调整代码字体大小 */
+            margin-bottom: 20px;
+            white-space: pre-wrap; /* 自动换行 */
+        }
+        ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ecf0f1; /* 淡灰色 */
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        .step {
+            margin-bottom: 25px;
+        }
+        .step p {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa; /* 更柔和的浅色背景 */
+            border-left: 4px solid #2980b9;
+            padding-left: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .highlight p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Xray 使用指南</h1>
+</header>
+
+<main>
+
+    <div class="step">
+        <h2>1. 下载压缩包</h2>
+        <pre><code>wget https://github.com/XTLS/Xray-core/releases/...   #这里自寻最新版本。</code></pre>
+    </div>
+
+
+    <div class="step">
+      <p>客户端通过 sftp 登录 VPS ，可使用 put 命令将文件上传至VPS</p>
+      <pre><code>sftp root@vps_ip地址</code></pre>
+      <pre><code>输入密码</code></pre>
+      <pre><code>put C:\Users\Administrator\Downloads\Xray-linux-64.zip  /root/</code></pre>
+  </div>
+
+    <div class="step">
+        <h2>2. 解压安装包</h2>
+        <pre><code>unzip -d ./Xray Xray-linux-64.zip</code></pre>
+        <p>解压当前目录下的 Xray-linux-64.zip 文件。</p>
+        <p>将解压后的文件存放到当前目录下的 Xray 子目录中。</p>
+    </div>
+
+    <div class="step">
+        <h2>3. Xray 文件目录说明</h2>
+        <ul>
+            <li><strong>xray</strong>：Xray 的核心可执行文件。</li>
+            <li><strong>geoip.dat</strong>：IP 地理数据库。</li>
+            <li><strong>geosite.dat</strong>：域名分类数据库。</li>
+            <li><strong>LICENSE</strong>：开源许可协议文件。</li>
+            <li><strong>README.md</strong>：Xray 的简介和使用说明。</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h2>4. 创建配置文件</h2>
+        <pre><code>touch Xray/config.json</code></pre>
+        <p>配置 Xray 的服务和代理规则。</p>
+    </div>
+
+    <div class="step">
+        <h2>5. 赋予执行权限</h2>
+        <pre><code>chmod +x Xray/xray</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>6. 移动 Xray 文件到默认加载目录</h2>
+        <pre><code>sudo mv Xray/xray /usr/local/bin/</code></pre>
+        <pre><code>sudo mv Xray /usr/local/etc/xray</code></pre>
+        <p>geoip.dat 和 geosite.dat 文件与 config.json 放在同一目录下。</p>
+    </div>
+
+    <div class="step">
+        <h2>7. 创建 Systemd 服务文件</h2>
+        <pre><code>touch /etc/systemd/system/xray.service</code></pre>
+        <pre><code>code /etc/systemd/system/xray.service</code></pre>
+        <pre><code>
+          [Unit]
+          Description=Xray Service
+          After=network.target
+          
+          [Service]
+          User=nobody
+          ExecStart=/usr/local/bin/xray -config /usr/local/etc/xray/config.json
+          Restart=on-failure
+          RestartSec=3
+          
+          [Install]
+          WantedBy=multi-user.target
+        </code></pre>
+        <pre><code>重新加载 Systemd配置: sudo systemctl daemon-reload</code></pre>
+        <p>配置 Xray 以便开机启动,在文件中指定 xray 及其 config.json 的路径。</p>
+    </div>
+
+    <div class="step">
+        <h2>8. 设置配置文件 </h2>
+        <p>code  /usr/local/etc/xray/config.json , 你也可以从其他客户端导入配置。</p>
+        <pre><code>{
+  "inbounds": [
+    {
+      "port": 1080,
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": false
+      }
+    },
+    {
+      "port": 8080,
+      "listen": "127.0.0.1",
+      "protocol": "http",
+      "settings": {
+        "allowTransparent": false
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "104.18.20.69",
+            "port": 443,
+            "users": [
+              {
+                "id": "7fb18dca-47a6-498a-b5ec-9e3bdce1b592",
+                "encryption": "none",
+                "alterId": 0
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "wsSettings": {
+          "path": "/pq/us3",
+          "headers": {
+            "Host": "us3.xn--ghqu5fm27b67w.com"
+          }
+        },
+        "tlsSettings": {
+          "serverName": "us3.xn--ghqu5fm27b67w.com",
+          "allowInsecure": false
+        }
+      }
+    }
+  ]
+}</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>9. Xray 常用命令</h2>
+        <pre><code>启动: sudo systemctl start xray</code></pre>
+        <pre><code>关闭: sudo systemctl stop xray</code></pre>
+        <pre><code>重启: sudo systemctl restart xray</code></pre>
+        <pre><code>查看状态: sudo systemctl status xray</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>10. 测试代理</h2>
+        <pre><code>curl -v --proxy socks5://127.0.0.1:1080 https://www.google.com</code></pre>
+        <pre><code>curl -v --proxy http://127.0.0.1:8080 https://www.google.com</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>11. 系统启动时自动启动 Xray</h2>
+        <pre><code>sudo systemctl enable xray</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>12. 卸载 Xray</h2>
+        <pre><code>rm -r /usr/local/bin/xray</code></pre>
+        <pre><code>rm -r /usr/local/etc/xray</code></pre>
+    </div>
+
+    <div class="highlight">
+        <h2>重要提示</h2>
+        <p>确保你在配置文件中使用的端口号和协议与服务器端配置匹配，避免连接问题。</p>
+    </div>
+
+</main>
+
+<footer>
+    <p>© 2025 Xray 项目</p>
+</footer>
+
+</body>
+</html>
