@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xray+Nginx 服务端节点搭建指南</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f1f1; /* 更柔和的背景色 */
+            margin: 0;
+            padding: 0;
+            line-height: 1.8; /* 调整行高 */
+        }
+        header {
+            background-color: #34495e; /* 更柔和的灰蓝色 */
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2rem; /* 增大标题字体 */
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 1.6rem; /* 增大小标题字体 */
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p, ul {
+            font-size: 1.1rem; /* 调整段落文字的字号 */
+            line-height: 1.8; /* 增加行高，提升可读性 */
+        }
+        pre {
+            background-color: #ecf0f1; /* 淡灰色背景 */
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace; /* 使用等宽字体 */
+            font-size: 1.1rem; /* 调整代码字体大小 */
+            margin-bottom: 20px;
+            white-space: pre-wrap; /* 自动换行 */
+        }
+        ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ecf0f1; /* 淡灰色 */
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        .step {
+            margin-bottom: 25px;
+        }
+        .step p {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa; /* 更柔和的浅色背景 */
+            border-left: 4px solid #2980b9;
+            padding-left: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .highlight p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Xray+Nginx 服务端节点搭建指南</h1>
+</header>
+
+<main>
+
+
+
+  <div class="step">
+    <pre><code>
+      1. xray 服务端协议选择
+      VMess/vless/trojan/Reality + tcp/ws/http + tls/xtls + Nginx反向代理伪装流量 + 异常流量转发防止主动探测
+      
+      2. 推荐搭配
+      Reallity + Ws + tls
+      Trojan + TLS + Nginx反向代理
+      客户端与 Nginx 使用 tls 加密， Nginx 与服务端不使用 tls 加密</code></pre>
+</div>
+
+    <div class="step">
+        <h2>1. 安装 Xray</h2>
+        <p>创建并编辑配置文件：</p>
+        <pre><code>code /usr/local/etc/xray/config.json</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>2. 安装 Nginx</h2>
+        <pre><code>sudo apt update && sudo apt install nginx                #安装nginx</code></pre>
+        <p>创建或编辑配置文件来配置 HTTPS 反向代理：</p>
+        <pre><code>code /etc/nginx/sites-available/your-config-file</code></pre>
+        <p>将其从 sites-available 目录中的配置文件链接到 sites-enabled 目录，使 Nginx 加载配置文件：</p>
+        <pre><code>sudo ln -s /etc/nginx/sites-available/your-config-file /etc/nginx/sites-enabled/</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>3. Xray 服务端配置文件内容</h2>
+        <pre><code>
+{
+  "inbounds": [
+    {
+      "port": 1080,  // 监听 1080 端口
+      "listen": "0.0.0.0",  // 监听所有接口
+      "protocol": "vless",  // 使用 VLESS 协议
+      "settings": {
+        "clients": [
+          {
+            "id": "your-uuid-here",  // 用户的 UUID，确保是唯一的
+            "alterId": 64  // 可选：根据需要设定
+          }
+        ],
+        "decryption": "none"  // 无额外的加密
+      },
+      "streamSettings": {
+        "network": "tcp",  // 使用 TCP 网络协议
+        "security": "tls",  // 启用 TLS 加密，可以禁用设置为none
+        "tlsSettings": {
+          "certificates": [
+            {
+              "certificateFile": "/etc/ssl/certs/your_domain_cert.crt",  // 证书文件路径
+              "keyFile": "/etc/ssl/private/your_domain_key.key"  // 私钥文件路径
+            }
+          ],
+          "alpn": ["h2", "http/1.1"]  // 支持 HTTP/2 和 HTTP/1.1 协议
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {}
+    }
+  ]
+}
+        </code></pre>
+    </div>
+
+    <div class="step">
+        <h2>4. Nginx 反向代理配置文件内容</h2>
+        <pre><code>
+server {
+    listen 443 ssl;  # 监听 443 端口并启用 SSL（即 HTTPS）
+    server_name your-domain.com;  # 设置服务器的域名或 公网IP 地址，替换为你自己的域名
+    
+    # SSL 配置部分
+    ssl_certificate /etc/ssl/certs/selfsigned.crt;  # 指定 SSL 证书的文件路径，确保文件路径正确
+    ssl_certificate_key /etc/ssl/private/selfsigned.key;  # 指定 SSL 证书私钥的文件路径，确保文件路径正确
+
+    location / {
+        # 将所有进入该域名（your-domain.com）根路径（/）的请求转发到 Xray 本地监听的端口（1080）
+        proxy_pass http://127.0.0.1:1080;  # 转发到 Xray 本地监听的 SOCKS5 端口（或其他协议端口）
+        
+        # 设置一些头信息，确保请求可以正确通过代理进行传递
+        proxy_set_header Host $host;  # 将原始请求的 Host 头传递到目标服务器
+        proxy_set_header X-Real-IP $remote_addr;  # 将客户端的真实 IP 地址传递到目标服务器
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;  # 传递客户端的真实 IP 地址链，保留每次转发的信息
+        proxy_set_header X-Forwarded-Proto $scheme;  # 传递请求的协议类型（http 或 https）
+    }
+}
+        </code></pre>
+    </div>
+
+    <div class="step">
+        <h2>5. 生成配置文件中所需信息</h2>
+        <ul>
+            <li><strong>生成 UUID：</strong><pre><code>xray uuid                   #将生成的 UUID 替换服务端和客户端配置文件中的 <code>your-uuid-here</code>。                    </code></pre></li>
+            <li><strong>获取 TLS 证书和私钥：</strong>
+                <ul>
+                    <li>使用 <code>Certbot</code> 来获取并安装证书，需域名。</li>
+                    <li>使用 <code>openssl</code> 创建一个自签名证书：</li>
+                    <pre><code>sudo apt update && sudo apt install openssl             #安装openssl                       </code></pre>
+                    <pre><code>sudo openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout /etc/ssl/private/selfsigned.key -out /etc/ssl/certs/selfsigned.crt</code></pre>
+                    <li>生成证书时，会要求填写区分名称(DN)相关信息。推荐配置如下：</li>
+                    <pre><code>Country Name (2 letter code) [AU]: CN</code></pre>
+                    <pre><code>State or Province Name (full name) [Some-State]: Beijing</code></pre>
+                    <pre><code>Locality Name (eg, city) []: Beijing</code></pre>
+                    <pre><code>Organization Name (eg, company) [Internet Widgits Pty Ltd]: Evan</code></pre>
+                    <pre><code>Common Name (e.g. server FQDN or YOUR name) []: 127.0.0.1</code></pre>
+                    <pre><code>Email Address []: your-email@example.com</code></pre>
+                    <p>这将生成一个自签名的证书和私钥，存放在 /etc/ssl/private/ 和 /etc/ssl/certs/ 路径下,  配置 Nginx 使用自签名证书</p>
+
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="step">
+      <h2>6. xray服务端与Nginx信息传递确认</h2>
+      <pre><code>端口一致性：Xray 和 Nginx 中的端口配置需要保持一致，确保请求正确转发。</code></pre>
+      <pre><code>证书和加密：Nginx 和 Xray 可以使用不同的证书，但需要合理设置 TLS 加密处理。建议通过 Nginx 处理 SSL，Xray 配置为非加密状态。 </code></pre>
+      <pre><code>协议一致性：Xray 使用的协议（如 vless）和加密设置要与客户端一致。</code></pre>
+      <pre><code>监听地址：Xray 的 listen 地址和 Nginx 的 proxy_pass 地址应一致，确保流量正确转发。</code></pre>
+  </div>
+
+
+
+
+    <div class="step">
+        <h2>7. 启动 Nginx与Xray</h2>
+        <pre><code>sudo systemctl start nginx && sudo systemctl enable nginx        </code></pre>
+        <pre><code>sudo systemctl start xray && sudo systemctl enable xray        </code></pre>
+    </div>
+
+
+    <div class="step">
+        <h2>8. 获取节点信息，写入客户端配置文件</h2>
+        <pre><code>
+{
+  "inbounds": [
+    {
+      "port": 1080,  // 监听本地 1080 端口，作为 SOCKS5 代理
+      "listen": "127.0.0.1",  // 只监听本地接口
+      "protocol": "socks",  // 使用 SOCKS5 协议
+      "settings": {
+        "auth": "noauth",  // 无认证
+        "udp": true  // 启用 UDP 转发
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vless",  // 使用 VLESS 协议
+      "settings": {
+        "vnext": [
+          {
+            "address": "your-domain.com",  // 客户端连接的实际服务器的 IP 地址或域名
+            "port": 443,  // 连接到 Nginx 的 443 端口
+            "users": [
+              {
+                "id": "your-uuid-here",  // 与服务端配置中的 UUID 一致
+                "alterId": 64,  // 需要与服务端一致
+                "security": "tls"  // 启用 TLS 加密与 Nginx 之间建立安全连接。
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",  // 使用 TCP 网络协议
+        "security": "tls",  // 启用 TLS 加密,确保传输过程中的数据被加密
+        "tlsSettings": {
+          "serverName": "your-domain.com",  // 证书对应的域名
+          "allowInsecure": false  // 不允许不安全的连接
+        }
+      }
+    }
+  ]
+}
+        </code></pre>
+    </div>
+
+</main>
+
+<footer>
+    <p>© 2025 Xray+Nginx 项目</p>
+</footer>
+
+</body>
+</html>
