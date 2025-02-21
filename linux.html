@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>终端使用指南</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+        }
+        header {
+            background-color: #34495e;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        p, ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #34495e;
+        }
+        pre {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            color: #2c3e50;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        .step {
+            margin-bottom: 25px;
+        }
+        .step p {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2980b9;
+            padding: 10px 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .highlight p {
+            font-size: 1.2rem;
+            color: #2980b9;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>终端使用指南</h1>
+</header>
+
+<main>
+
+    <div class="step">
+        <h2>1. Linux 配置文件加载机制</h2>
+        <p>Linux 中的配置文件加载机制主要取决于配置文件的种类和作用：</p>
+        <ul>
+            <li><strong>系统配置文件</strong>：位于 <code>/etc/</code> 目录下，系统启动时加载，影响整个系统行为。</li>
+            <li><strong>用户级配置文件</strong>：位于 <code>~/.**</code> 目录下，用户登录时加载，仅对当前用户生效。</li>
+            <li><strong>服务配置文件</strong>：由守护进程在启动时加载。</li>
+            <li><strong>应用程序配置文件</strong>：位于 <code>/etc/**/</code> 目录下，应用程序启动时加载。</li>
+        </ul>
+        <div class="note">
+            <p>注意：系统级配置文件优先于用户级配置文件加载。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>2. 环境变量与配置文件的关系</h2>
+        <p>环境变量与配置文件的作用都是管理和传递应用程序的配置信息。环境变量可以通过配置文件进行处理和管理。</p>
+        <ul>
+            <li><strong>环境变量</strong>：用于存储系统信息，影响系统和应用程序的行为。</li>
+            <li><strong>配置文件</strong>：用于定义环境变量（如 <code>PATH</code>）的值，并在系统启动或用户登录时加载。</li>
+        </ul>
+        <div class="highlight">
+            <p>环境变量的优先级通常高于配置文件中的设置。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>3. 常用环境变量 PATH</h2>
+        <p><code>PATH</code> 环境变量是操作系统中非常重要的一个变量，它告诉系统在哪些目录中查找可执行文件。</p>
+        <ul>
+            <li><strong>系统级 PATH</strong>：影响所有用户的终端会话。</li>
+            <li><strong>用户级 PATH</strong>：影响当前用户的终端会话。</li>
+        </ul>
+        <pre><code># 查看 PATH
+echo $PATH
+
+# 添加新路径到 PATH
+export PATH=$PATH:/new/directory
+
+# 永久添加路径（编辑 ~/.bashrc 或 ~/.zshrc）
+export PATH=$PATH:/new/directory</code></pre>
+        <div class="note">
+            <p>注意：修改 <code>~/.bashrc</code> 或 <code>~/.zshrc</code> 后，需要运行 <code>source ~/.bashrc</code> 或 <code>source ~/.zshrc</code> 使更改生效。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>4. Linux 软链接</h2>
+        <p>软链接是一个独立的文件，存储的是目标文件或目录的路径。</p>
+        <pre><code># 创建软链接
+ln -s &lt;目标文件/目录&gt; &lt;软链接文件名&gt;
+
+# 示例
+ln -s /path/to/target /path/to/link</code></pre>
+        <div class="note">
+            <p>注意：软链接可以指向文件或目录，删除软链接不会影响目标文件。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>5. eval 命令</h2>
+        <p><code>eval</code> 命令用于将输出的字符串解析为命令执行。</p>
+        <pre><code># 示例
+eval "echo Hello, World!"</code></pre>
+        <div class="note">
+            <p>注意：<code>eval</code> 可以动态生成并执行命令，但需谨慎使用以避免安全问题。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>6. Linux 异常排查</h2>
+        <ul>
+            <li><strong>查看服务状态和日志信息</strong>：
+                <pre><code>sudo systemctl start &lt;service&gt;
+sudo systemctl stop &lt;service&gt;
+sudo systemctl status &lt;service&gt;
+sudo systemctl enable &lt;service&gt;
+sudo systemctl disable &lt;service&gt;</code></pre>
+            </li>
+            <li><strong>检测配置文件</strong>：检查配置文件是否有异常。</li>
+            <li><strong>端口使用情况</strong>：
+                <pre><code>lsof -i:&lt;端口号&gt;
+kill &lt;PID&gt;</code></pre>
+            </li>
+            <li><strong>文件权限</strong>：检查文件权限是否正常。</li>
+        </ul>
+        <div class="note">
+            <p>注意：使用 <code>kill</code> 命令时，确保终止的进程不会影响系统运行。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>7. Vim 使用指南</h2>
+        <ul>
+            <li><strong>创建文件</strong>：
+                <pre><code>touch 文件名
+mkdir 文件夹名
+vim 文件名</code></pre>
+            </li>
+            <li><strong>正常关闭 Vim</strong>：
+                <pre><code>:wq  # 保存并退出
+:q!  # 不保存退出
+:w   # 仅保存</code></pre>
+            </li>
+            <li><strong>修改只读文件</strong>：
+                <pre><code>sudo vim 文件名  # 使用 sudo 权限编辑
+:w !sudo tee %  # 强制保存</code></pre>
+            </li>
+            <li><strong>访问系统剪切板</strong>：
+                <pre><code># 查看 Vim 版本是否支持剪切板
+vim --version | grep clipboard
+
+# 安装 gVIM
+sudo apt-get install vim-gtk
+
+# 使用剪切板
+"+dd  # 剪切
+"+yy  # 复制
+Ctrl+Shift+V  # 粘贴（编辑模式）
+Shift+Insert  # 粘贴（通用）</code></pre>
+            </li>
+        </ul>
+        <div class="note">
+            <p>注意：Vim 的剪切板支持需要安装 <code>vim-gtk</code> 或类似包。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>8. Nano 使用教程</h2>
+        <ul>
+            <li><strong>修饰键</strong>：
+                <ul>
+                    <li><code>^</code>：Ctrl 键</li>
+                    <li><code>M</code>：Alt 键</li>
+                </ul>
+            </li>
+            <li><strong>复制文本</strong>：
+                <ul>
+                    <li>Putty：选择文本后点击鼠标左键。</li>
+                    <li>Xshell：选择文本后按 <code>Ctrl+INSERT</code>。</li>
+                </ul>
+            </li>
+            <li><strong>粘贴文本</strong>：
+                <ul>
+                    <li>Putty：点击鼠标右键。</li>
+                    <li>Xshell：按 <code>Shift+INSERT</code>。</li>
+                </ul>
+            </li>
+            <li><strong>保存修改</strong>：<code>Ctrl+O</code>，输入文件名。</li>
+            <li><strong>退出编辑</strong>：<code>Ctrl+X</code>。</li>
+            <li><strong>取消操作</strong>：<code>Ctrl+C</code>。</li>
+        </ul>
+        <div class="note">
+            <p>注意：Nano 是轻量级文本编辑器，适合快速编辑配置文件。</p>
+        </div>
+    </div>
+
+    <div class="step">
+        <h2>9. 文件操作</h2>
+        <ul>
+            <li><strong>复制文件</strong>：
+                <pre><code>cp &lt;源文件&gt; &lt;目标文件&gt;</code></pre>
+            </li>
+            <li><strong>移动文件</strong>：
+                <pre><code>mv &lt;源文件&gt; &lt;目标文件&gt;</code></pre>
+            </li>
+        </ul>
+        <div class="note">
+            <p>注意：<code>mv</code> 命令也可以用于重命名文件。</p>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <p>© 2025 终端项目</p>
+</footer>
+
+</body>
+</html>
