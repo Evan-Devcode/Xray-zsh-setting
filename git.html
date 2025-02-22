@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git 简介与配置</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f1f1;
+            margin: 0;
+            padding: 0;
+            line-height: 1.8;
+        }
+        header {
+            background-color: #34495e;
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+        }
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h2 {
+            font-size: 1.6rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        p, ul {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        pre {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        .step {
+            margin-bottom: 25px;
+        }
+        .step p {
+            margin-bottom: 10px;
+        }
+        .highlight {
+            background-color: #f8f9fa;
+            border-left: 4px solid #2980b9;
+            padding-left: 15px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        .highlight p {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Git 简介与配置</h1>
+</header>
+
+<main>
+
+    <div class="step">
+        <h2>1. Git 配置文件层级</h2>
+        <p>Git 配置文件存储 Git 配置信息，可以分为以下几种层级，每一层级都对应不同的配置文件：</p>
+        <ul>
+            <li><strong>系统级配置文件</strong>：<code>/etc/gitconfig</code></li>
+            <li><strong>用户级配置文件</strong>：<code>~/.gitconfig</code> 或 <code>~/.config/git/config</code></li>
+            <li><strong>仓库级配置文件</strong>：<code>&lt;repo&gt;/.git/config</code></li>
+        </ul>
+        <p>配置文件的内容基本上由一系列 <code>key = value</code> 键值对组成。</p>
+    </div>
+
+    <div class="step">
+        <h2>2. 配置用户名和邮箱</h2>
+        <p>Git 的用户名和邮箱用于标识每次提交代码的作者。每次提交时，Git 会记录提交人及其邮箱，方便后续追踪和查看是谁提交了代码。</p>
+        <p>你可以通过编辑 Git 配置文件来设置用户名和邮箱。配置文件位于用户主目录下的 <code>~/.gitconfig</code> 文件中，内容通常如下：</p>
+        <pre><code>[user]
+    name = Your Username
+    email = your.email@example.com</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>3. .gitignore 文件</h2>
+        <p><code>.gitignore</code> 文件用于告诉 Git 哪些文件或目录应该被忽略，即不被纳入版本控制。这对于避免将不必要的文件（如编译生成的文件、日志文件、依赖目录等）提交到仓库中非常有用。</p>
+        <ul>
+            <li><strong>忽略文件</strong>：直接写文件名，例如 <code>file.txt</code>。</li>
+            <li><strong>忽略目录</strong>：在目录名后加 <code>/</code>，例如 <code>dir/</code>。</li>
+            <li><strong>通配符</strong>：
+                <ul>
+                    <li><code>*</code>：匹配任意字符（除了 <code>/</code>）。</li>
+                    <li><code>?</code>：匹配单个字符。</li>
+                    <li><code>**</code>：匹配任意层级的目录。</li>
+                </ul>
+            </li>
+            <li><strong>否定规则</strong>：使用 <code>!</code> 表示不忽略某个文件或目录。</li>
+            <li><strong>注释</strong>：使用 <code>#</code> 添加注释。</li>
+        </ul>
+    </div>
+
+    <div class="step">
+        <h2>4. 配置代理</h2>
+        <p>Git 代理设置用于解决访问 GitHub 或其他远程仓库时的网络问题。配置代理时，首先需要知道本地节点的端口号（<code>[port]</code>）。</p>
+        <pre><code># 设置 HTTP 代理
+git config --global http.proxy http://127.0.0.1:1080
+
+# 设置 HTTPS 代理
+git config --global https.proxy https://127.0.0.1:1080
+
+# 设置 SOCKS5 代理
+git config --global http.proxy socks5://127.0.0.1:1080
+git config --global https.proxy socks5://127.0.0.1:1080
+
+# 仅为 GitHub 设置代理
+git config --global http.https://github.com.proxy http://127.0.0.1:1080
+git config --global https.https://github.com.proxy https://127.0.0.1:1080
+
+# 查看当前代理配置
+git config --global --get http.proxy
+git config --global --get https.proxy
+
+# 取消代理设置
+git config --global --unset http.proxy
+git config --global --unset https.proxy</code></pre>
+    </div>
+
+    <div class="step">
+        <h2>5. Git 远程仓库设置</h2>
+        <h3>HTTPS 关联远程仓库</h3>
+        <pre><code>git remote add origin https://github.com/username/repo.git</code></pre>
+        <p>每次推送或拉取时需要输入用户名和密码（或访问令牌）。</p>
+
+        <h3>SSH 关联远程仓库</h3>
+        <p>通过 SSH 连接远程仓库时，不需要每次输入密码，使用密钥认证。</p>
+        <ol>
+            <li>生成 SSH 密钥：
+                <pre><code>ssh-keygen -t rsa -C "your.email@example.com"</code></pre>
+                <p>（默认按回车，设置密码为空）。</p>
+            </li>
+            <li>将公钥添加到 GitHub：登录 GitHub -> Settings -> SSH and GPG keys，添加新密钥。</li>
+            <li>使用 SSH 关联远程仓库（使用 SSH 密钥进行认证，不会要求输入密码）：
+                <pre><code>git remote add origin git@github.com:username/repo.git</code></pre>
+            </li>
+        </ol>
+    </div>
+
+    <div class="step">
+        <h2>6. Git 常见操作</h2>
+        <ul>
+            <li><strong>克隆项目</strong>：
+                <pre><code>git clone &lt;repository-url&gt;</code></pre>
+            </li>
+            <li><strong>初始化本地仓库</strong>：
+                <pre><code>git init</code></pre>
+            </li>
+            <li><strong>提交本地修改</strong>：
+                <pre><code>git add &lt;file&gt;
+git commit -m "提交信息"</code></pre>
+            </li>
+            <li><strong>推送到远程仓库</strong>：
+                <pre><code>git push -u origin master</code></pre>
+            </li>
+            <li><strong>版本管理                            </strong>：
+                <pre><code>git log                       查看提交历史                </code></pre>
+                <pre><code>git reset &lt;commit-hash&gt;       回滚到某个提交状态                    </code></pre>
+                <pre><code>git checkout -- &lt;file&gt;        撤销文件的修改                  </code></pre>
+            </li>
+         
+            <li><strong>分支管理</strong>：
+                <pre><code>git branch                 # 查看当前所有分支
+git branch new-feature     # 创建新分支
+git checkout new-feature   # 切换到新分支
+git merge new-feature      # 合并分支</code></pre>
+            </li>
+            <li><strong>本地分支与远程分支关联</strong>：
+                <p>在 Git 中，分支关联指的是将本地分支与远程分支关联起来，以便你可以方便地进行推送（push）和拉取（pull）操作，而不需要每次都指定远程分支的名称。 </p>
+                <pre><code>git push -u origin branch_name</code></pre>
+            </li>
+            <li><strong>查看已有配置</strong>：
+                <pre><code>git config --global -l</code></pre>
+            </li>
+        </ul>
+    </div>
+
+</main>
+
+<footer>
+    <p>© 2025 Git 配置指南</p>
+</footer>
+
+</body>
+</html>
