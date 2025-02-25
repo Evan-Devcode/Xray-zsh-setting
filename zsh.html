@@ -155,6 +155,9 @@ zinit light Aloxaf/fzf-tab
 # 浅克隆并安装 powerlevel10k 主题
 zinit light --depth 1 romkatv/powerlevel10k
 
+# 初始化 Zsh 补全系统
+autoload -Uz compinit && compinit
+
 # 修改zsh-autosuggestions插件的接受建议并执行的快捷键为 Alt+E
 bindkey '^[e' autosuggest-accept
 
