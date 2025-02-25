@@ -136,7 +136,7 @@ export https_proxy="http://127.0.0.1:8080"</code></pre>
 
 
     <div class="step">
-        <h2>7. 安装插件管理器zinit</h2>
+        <h2>8. 安装插件管理器zinit</h2>
         <pre><code>bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"</code></pre>
         <p>zinit安装目录：~/.local/share/zinit/</p>
         <p>zinit更新了 ~/.zshrc 文件</p>
@@ -144,7 +144,7 @@ export https_proxy="http://127.0.0.1:8080"</code></pre>
 
 
     <div class="step">
-        <h2>8. 通过zinit安装插件并设置全局代理</h2>
+        <h2>9. 通过zinit安装插件并设置全局代理</h2>
         <p>编辑配置文件 code ~/.zshrc , 添加以下内容：</p>
         <pre><code>zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
@@ -195,12 +195,12 @@ alias j='z'  # 直接用 j 代替 z        </code></pre>
     </div>
 
     <div class="step">
-        <h2>9. 重新加载配置文件</h2>
+        <h2>10. 重新加载配置文件</h2>
         <pre><code>source ~/.zshrc</code></pre>
     </div>
 
     <div class="step">
-        <h2>10. zinit 使用指南</h2>
+        <h2>11. zinit 使用指南</h2>
         <ul>
             <li><strong>zinit light：</strong> 异步加载插件，适合不需要立即生效的插件，启动过程更快。</li>
             <li><strong>zinit load：</strong> 同步加载插件，适合需要立即生效的插件，可能会稍微影响启动速度。</li>
@@ -213,13 +213,13 @@ alias j='z'  # 直接用 j 代替 z        </code></pre>
     </div>
 
     <div class="step">
-        <h2>11. 重新配置 powerlevel10k</h2>
+        <h2>12. 重新配置 powerlevel10k</h2>
         <pre><code>p10k configure</code></pre>
     </div>
 
 
     <div class="step">
-        <h2>12. 更改apt软件源</h2>
+        <h2>13. 改apt软件源</h2>
         <pre><code>sudo code /etc/apt/sources.list</code></pre>
         <pre><code>deb http://deb.debian.org/debian/ stable main contrib non-free
 deb-src http://deb.debian.org/debian/ stable main contrib non-free
@@ -232,7 +232,7 @@ deb https://mirrors.tuna.tsinghua.edu.cn/debian/ bullseye-updates main contrib n
 
 
     <div class="step">
-        <h2>13. 更改pip软件源</h2>
+        <h2>14 更改pip软件源</h2>
         <pre><code>code ~/.pip/pip.conf</code></pre>
         <p>pip.conf 文件中，不能同时存在多个 index-url 配置项。下面两个保留一个就行</p>
         <pre><code>[global]
