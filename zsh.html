@@ -118,38 +118,80 @@
         <pre><code>sudo apt update && sudo apt install fzf </code></pre>
     </div>
 
+
+
+    <div class="step">
+        <h2>7. 设置Linux全局代理</h2>
+        <p>创建并编辑配置文件 <code>code ~/.zshrc</code></p>
+        <pre><code> # 所有不指定代理类型的请求（如果没有单独配置 HTTP/HTTPS 代理）将通过 SOCKS5代理,走127.0.0.1:1080。
+export all_proxy="socks5://127.0.0.1:1080"
+    
+# 任何通过HTTP 协议发出的请求都会通过代理服务器127.0.0.1:8080
+export http_proxy="http://127.0.0.1:8080"
+            
+# 任何通过HTTPS 协议发出的请求也会通过相同的代理服务器 127.0.0.1:8080
+export https_proxy="http://127.0.0.1:8080"</code></pre>
+<p>更新配置文件 <code>source ~/.zshrc</code></p>
+    </div>
+
+
     <div class="step">
         <h2>7. 安装插件管理器zinit</h2>
         <pre><code>bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"</code></pre>
         <p>zinit安装目录：~/.local/share/zinit/</p>
-        <p>zinit创建了 ~/.zshrc 文件</p>
+        <p>zinit更新了 ~/.zshrc 文件</p>
     </div>
 
 
     <div class="step">
         <h2>8. 通过zinit安装插件并设置全局代理</h2>
         <p>编辑配置文件 code ~/.zshrc , 添加以下内容：</p>
-        <pre><code>
-# 所有不指定代理类型的请求（如果没有单独配置 HTTP/HTTPS 代理）将通过 SOCKS5代理,走127.0.0.1:1080。
-export all_proxy="socks5://127.0.0.1:1080"
-
-# 任何通过HTTP 协议发出的请求都会通过代理服务器127.0.0.1:8080
-export http_proxy="http://127.0.0.1:8080"
-
-# 任何通过HTTPS 协议发出的请求也会通过相同的代理服务器 127.0.0.1:8080
-export https_proxy="http://127.0.0.1:8080"
-
-zinit light zsh-users/zsh-autosuggestions
-zinit light zsh-users/zsh-syntax-highlighting
+        <pre><code>zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions 
 zinit light agkozak/zsh-z
+zinit light Aloxaf/fzf-tab
 
-# 安装 powerlevel10k 主题
-zinit light romkatv/powerlevel10k
+# 浅克隆并安装 powerlevel10k 主题
+zinit light --depth 1 romkatv/powerlevel10k
 
 # 修改zsh-autosuggestions插件的接受建议并执行的快捷键为 Alt+E
 bindkey '^[e' autosuggest-accept
-        </code></pre>
+
+#修改z插件别名为Z
+alias j='z'  # 直接用 j 代替 z        </code></pre>
+    </div>
+
+
+    <div class="step">
+        <p>插件z和zsh-autosuggestions 依赖系统历史记录文件（如 ~/.zsh_history），需确保 Zsh 配置启用历史记录持久化和多终端共享复用。</p>
+        <pre><code>            # 历史记录文件
+            HISTFILE=~/.zsh_history        # 历史记录文件位置
+            HISTSIZE=10000                 # 内存中保存的命令数
+            SAVEHIST=10000                 # 文件中保存的历史命令数
+            
+            # 启用时间戳记录
+            setopt EXTENDED_HISTORY        # 记录命令的时间戳
+            setopt HIST_EXPIRE_DUPS_FIRST  # 优先移除最早的重复命令
+            setopt HIST_IGNORE_ALL_DUPS    # 删除所有重复命令，保留最新的一次
+            setopt HIST_IGNORE_SPACE       # 忽略以空格开头的命令
+            setopt HIST_SAVE_NO_DUPS       # 保存时去重重复命令
+            
+            # 共享历史记录
+            setopt SHARE_HISTORY           # 终端间共享历史记录
+            
+            # 忽略特定命令
+            HISTIGNORE="exit:clear"        # 忽略 `exit` 和 `clear` 等命令
+            
+            # 追加历史记录，不覆盖
+            setopt APPEND_HISTORY          # 追加历史记录而非覆盖
+            setopt HIST_IGNORE_DUPS        # 忽略重复的命令
+            
+            # 立即保存到历史记录
+            setopt INC_APPEND_HISTORY      # 每次执行命令时立即保存到历史记录
+            
+            # 避免保存重复命令
+            setopt HIST_BEEP               # 如果输入的命令是重复的，则发出警告音 </code></pre>
     </div>
 
     <div class="step">
