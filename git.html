@@ -106,23 +106,41 @@
     email = your.email@example.com</code></pre>
     </div>
 
+
+
     <div class="step">
         <h2>3. .gitignore 文件</h2>
-        <p><code>.gitignore</code> 文件用于告诉 Git 哪些文件或目录应该被忽略，即不被纳入版本控制。这对于避免将不必要的文件（如编译生成的文件、日志文件、依赖目录等）提交到仓库中非常有用。</p>
-        <ul>
-            <li><strong>忽略文件</strong>：直接写文件名，例如 <code>file.txt</code>。</li>
-            <li><strong>忽略目录</strong>：在目录名后加 <code>/</code>，例如 <code>dir/</code>。</li>
-            <li><strong>通配符</strong>：
-                <ul>
-                    <li><code>*</code>：匹配任意字符（除了 <code>/</code>）。</li>
-                    <li><code>?</code>：匹配单个字符。</li>
-                    <li><code>**</code>：匹配任意层级的目录。</li>
-                </ul>
-            </li>
-            <li><strong>否定规则</strong>：使用 <code>!</code> 表示不忽略某个文件或目录。</li>
-            <li><strong>注释</strong>：使用 <code>#</code> 添加注释。</li>
-        </ul>
+        <p><code>.gitignore</code> 文件用于告诉 Git 哪些文件或目录应该被忽略，即不被纳入版本控制。这对于避免将不必要的文件（如编译生成的文件、日志文件、依赖目录等）提交到仓库中非常有用。以下是如何创建和使用 .gitignore 文件的详细步骤：</p>
+        <p>1.  创建 .gitignore 文件 </p>
+        <pre><code>touch .gitignore                         </code></pre>
+        <p>2.  在 .gitignore 中添加忽略规则 </p>
+        <pre><code>            # 忽略指定文件
+            file.txt
+
+            # 忽略 node_modules 目录
+            node_modules/
+            
+            # 忽略日志文件
+            *.log
+            
+            # 忽略临时文件
+            *.swp
+            *.bak
+            
+            # 忽略所有的编译输出目录
+            build/
+            dist/
+            
+            # 忽略操作系统生成的文件（如 Mac 上的 .DS_Store 文件）
+            .DS_Store</code></pre>
+        <p>3.  提交 .gitignore 文件到版本库中 </p>
+        <pre><code>git add .gitignore
+git commit -m "Add .gitignore to ignore unnecessary files"</code></pre>
+        <p> .gitignore 只能忽略未被 Git 跟踪的文件 ，如果文件已经被跟踪，那么并不会被忽略，需要将文件移出版本库和暂存区    </p>
+
     </div>
+
+    
 
     <div class="step">
         <h2>4. 配置代理</h2>
@@ -173,38 +191,104 @@ git config --global --unset https.proxy</code></pre>
     <div class="step">
         <h2>6. Git 常见操作</h2>
         <ul>
-            <li><strong>克隆项目</strong>：
-                <pre><code>git clone &lt;repository-url&gt;</code></pre>
+            <li><strong>分支管理</strong>：
+                <pre><code>git branch                                         查看全部分支   </code></pre>
+                <pre><code>git switch branch-name                             切换分支       </code></pre>
+                <pre><code>git checkout commit-hash                           基于某个版本创建新分支
+git checkout -b new-branch-name                </code></pre>
             </li>
-            <li><strong>初始化本地仓库</strong>：
-                <pre><code>git init</code></pre>
+
+            <li><strong>版本管理</strong>：
+                <pre><code>git log                                             查看当前分支的提交记录     </code></pre>
+                <pre><code>git checkout commit-hash                            切换到之前某个提交         </code></pre>
+                <pre><code>git checkout branch-name                            返回到最新提交            </code></pre>
+                <pre><code>git rebase -i HEAD~3                                合并提交           </code></pre>
+                <pre><code>git reset --soft commit-hash                        将版本回退到暂存区中     </code></pre>
             </li>
-            <li><strong>提交本地修改</strong>：
-                <pre><code>git add &lt;file&gt;
-git commit -m "提交信息"</code></pre>
+
+            <li><strong>分支合并</strong>：
+                <pre><code>git switch main                                     切换到目标分支            </code></pre>
+                <pre><code>git merge feature-branch                            执行分支合并              </code></pre>
+        <p>如果没有冲突，Git 会自动将 feature-branch 的更改合并到 main 分支，并生成一个新的合并提交。</p>
             </li>
-            <li><strong>推送到远程仓库</strong>：
-                <pre><code>git push -u origin master</code></pre>
+
+
+
+            <li><strong>冲突解决</strong>：
+        <p> 1. 手动编辑冲突的文件，选择需要保留的内容 ，再次合并</p>
+        <p> 2. 指定合并的先后顺序，直接进行覆盖: </p>
+                <pre><code> git switch feature-branch                          切换到被合并的分支
+ git rebase main                                    将当前分支的修改提交到 main 分支最新提交之后  </code></pre>
+        <p>找到当前分支与目标分支之间的共同祖先，将当前分支与共同祖先之间的提交转移到目标分支的最新提交之后  </p>
+
+
             </li>
-            <li><strong>版本管理                            </strong>：
-                <pre><code>git log                       查看提交历史                </code></pre>
-                <pre><code>git reset &lt;commit-hash&gt;       回滚到某个提交状态                    </code></pre>
-                <pre><code>git checkout -- &lt;file&gt;        撤销文件的修改                  </code></pre>
+
+
+
+            
+            <li><strong>提交与版本操作</strong>：
+                <pre><code>git status                                         查看工作区和暂存区状态        </code></pre>
+                <pre><code>
+                    On branch main              当前处于 main 分支
+                    Your branch is up to date with 'origin/main'.
+                    
+                    Changes to be committed:      已添加到暂存区的文件
+                      (use "git reset HEAD <file>..." to unstage)
+                            new file:   newfile.txt
+                            modified:   readme.md
+                    
+                    Changes not staged for commit:     已在工作区被修改（包括删除或更改内容），但尚未添加到暂存区的文件
+                      (use "git add <file>..." to update what will be committed)
+                      (use "git restore <file>..." to discard changes in working directory)
+                            modified:   app.py
+                            deleted:    config.json
+                    
+                    Untracked files:             未跟踪的新文件或目录
+                      (use "git add <file>..." to include in what will be committed)
+                            temp.txt
+                            logs/
+                    
+                    no changes added to commit (use "git add" and/or "git commit -a")
+                                      
+                    
+                
+                </code></pre>
+                <p>如果文件已经修改或新创建但没有被 git add 添加到暂存区，它们会被认为是 未添加到暂存区的文件。Git 会对比工作区（未提交的文件）中的文件和 最后一次提交 中存储的版本，基于内容差异来判断文件是否已经修改。                         </p>
+                <p>                         </p>
+                <p>                         </p>
+
+                <pre><code>git add file                                       将修改添加到暂存区             </code></pre>
+                <pre><code>git reset file                                     将暂存区的修改回退到工作区，但保留工作区的更改 </code></pre>
+                <pre><code>git restore file                                   撤销工作区的修改,让文件恢复到上次提交的内容，</code></pre>
+                <p>如果你修改了文件，但还没有将它们暂存（没有使用 git add），你可以使用 git restore 撤销更改</p>
+                <pre><code>git commit -m "commit message"                     提交暂存区的文件                      </code></pre>
+                <p>提交后，文件仍然保留在工作区，暂存区会被清空。</p>
             </li>
          
-            <li><strong>分支管理</strong>：
-                <pre><code>git branch                 # 查看当前所有分支
-git branch new-feature     # 创建新分支
-git checkout new-feature   # 切换到新分支
-git merge new-feature      # 合并分支</code></pre>
+            <li><strong>回退提交历史</strong>：
+                <pre><code>git reset --soft commit-hash                       回退到指定版本库，，回退之前提交的内容会被移动到暂存区 </code></pre>
+                <pre><code>git reset --mixed commit-hash                      回退到指定版本库，重置暂存区，保留工作区     </code></pre>
+                <pre><code>git reset --hard commit-hash                       回退到指定版本库，所有未提交的更改会丢失     </code></pre>
             </li>
-            <li><strong>本地分支与远程分支关联</strong>：
-                <p>在 Git 中，分支关联指的是将本地分支与远程分支关联起来，以便你可以方便地进行推送（push）和拉取（pull）操作，而不需要每次都指定远程分支的名称。 </p>
-                <pre><code>git push -u origin branch_name</code></pre>
-            </li>
-            <li><strong>查看已有配置</strong>：
-                <pre><code>git config --global -l</code></pre>
-            </li>
+
+
+
+
+
+            <li><strong>本地仓库与远程仓库同步操作</strong>：
+                <p>1. 要进行同步操作，需先将本地仓库与远程仓库关联</p>
+                <pre><code>git clone git@github.com:username/repo.git                         克隆远程仓库到本地仓库 
+git remote add origin git@github.com:username/repo.git             将本地仓库连接到远程仓库</code></pre>
+
+                <p>2. 本地仓库与远程仓库同步操作 </p>
+                <pre><code>git pull origin branch-name                                        拉取远程仓库的更改   
+git push origin branch-name                                        推送本地更改到远程仓库
+git fetch origin                                                   获取远程仓库的更新，但不自动合并   </code></pre>
+
+                <p>1. 本地分支与远程分支关联</p>
+                <pre><code>git branch --set-upstream-to=origin/remote-branch  local-branch</code></pre>    
+            </li>    
         </ul>
     </div>
 
