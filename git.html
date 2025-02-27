@@ -286,7 +286,35 @@ git remote add origin git@github.com:username/repo.git             将本地仓�
 git push origin branch-name                                        推送本地更改到远程仓库
 git fetch origin                                                   获取远程仓库的更新，但不自动合并   </code></pre>
 
-                <p>1. 本地分支与远程分支关联</p>
+
+                <p>3. 同步冲突 </p>
+                <pre><code>git push 是将本地的提交上传到远程，不会合并历史。
+当本地版本号小于远程版本号时，一定会git push冲突。
+本地提交历史是远程提交历史的超集（即本地提交包含了远程的所有提交），只要没有其他人修改远程仓库，你就可以直接推送，不会有冲突。</code></pre>
+
+
+                <pre><code>git pull 其实是两个操作的结合：先拉取远程更新（git fetch），然后进行合并（git merge）
+git fetch 是一个从远程仓库拉取更新的命令，它会将远程仓库的最新提交和分支信息下载到本地，但不会自动合并到你当前的工作分支
+git fetch拉取的更新是指从你上次拉取或同步远程仓库信息以来，远程仓库的分支上新增的所有提交，即共同祖先之后的所有提交</code></pre>
+
+                <pre><code>合并冲突的本质：
+冲突的发生取决于合并双方或多方基于共同祖先的修改提交记录是否修改了同一文件的同一部分。
+
+合并冲突排查方向： 
+合格双方或多方自共同祖先以后的提交中，对同一文件的同一部分做了修改
+有未提交的修改，且与最新的提交修改记录发生冲突，对同一文件的同一部分都做修改
+
+git push冲突原因：本地和远程的提交历史有分叉，即本地仓库不是远程仓库的超集，就会发生push冲突
+git pull冲突原因：本地和远程自共同祖先以后提交中有冲突，即对同一文件的同一部分做了修改，就会发生pull冲突</code></pre>
+<pre><code>本地和远程的提交历史有分叉，一定会发生push冲突，不一定会发生pull冲突，这取决与是否修改内容是否冲突。</code></pre>  
+
+                <p>4. push冲突解决方法：</p>
+                <pre><code>1. 拉取远程更新：执行 git pull 将远程仓库的更改拉取到本地。
+2. 解决冲突并提交合并：如果发生冲突，手动解决冲突后使用 git add 和 git commit 提交。
+3. 推送：解决冲突并提交后，执行 git push 将本地的更改推送到远程仓库。</code></pre>   
+
+
+                <p>5. 本地分支与远程分支关联</p>
                 <pre><code>git branch --set-upstream-to=origin/remote-branch  local-branch</code></pre>    
             </li>    
         </ul>
