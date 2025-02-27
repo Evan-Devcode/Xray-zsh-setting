@@ -123,6 +123,55 @@ PermitEmptyPasswords no  # 禁止空密码登录</code></pre>
         <pre><code>put C:\Users\Administrator\.ssh\id_rsa.pub authorized_keys</code></pre>
     </div>
 
+    
+        <div class="step">
+        <h2>6. VS code插件sftp配置指南</h2>
+        <P>1. 在 VSCode 中，按 Ctrl+Shift+P（或者 Cmd+Shift+P 在 macOS 上）打开命令面板。</P>
+        <P>2. 输入并选择 SFTP: Config，这将创建一个 .vscode/sftp.json 配置文件。</P>
+        <P>3. 如果是第一次使用，会提示你选择一个目录用于创建配置文件（例如在工作区下）。配置文件会存储在 .vscode/sftp.json 中。</P>
+
+        <pre><code>
+{
+    "name": "My SFTP Profile",              // SFTP 配置的名称，用于标识此配置文件
+    "host": "113.45.73.135",                 // 远程服务器的主机地址（IP 或域名）
+    "protocol": "sftp",                      // 使用的协议，通常为 sftp
+    "port": 22,                              // 远程服务器的端口，默认是 22
+    "username": "root",                      // 登录远程服务器的用户名
+    "password": "Zxs123456",                 // 登录密码，建议使用 SSH 密钥认证，密码仅在必要时使用
+    "remotePath": "/root/project",           // 默认上传的远程目录
+    "uploadOnSave": true,                    // 是否在保存文件时自动上传
+    "ignore": [                              // 排除不需要上传的文件或文件夹
+        ".vscode",                           // 排除 .vscode 文件夹
+        ".git",                              // 排除 .git 文件夹
+        ".DS_Store"                          // 排除 macOS 生成的临时文件
+    ],
+    "watcher": {                             // 文件监视设置，自动上传和删除特定类型的文件
+        "files": "**/*.{js,css,html}",       // 监视的文件类型（支持 glob 格式）
+        "autoUpload": true,                   // 启用自动上传
+        "autoDelete": true                    // 启用自动删除（当本地文件删除时，远程也删除）
+    },
+    "maxPacketSize": 65536,                  // 调整数据包大小以提高性能，默认64KB
+    "retries": 3,                            // 如果连接失败，最多尝试重试的次数
+    "retryInterval": 5000,                   // 每次重试之间的时间间隔（毫秒）
+    "connectTimeout": 30000                  // 设置连接超时时间（毫秒）
+}        </code></pre>
+    <p>4. 此配置文件所在的文件夹即可与配置文件中设置的远程文件目录同步</p>
+    </div>
+
+
+    
+    
+    
+     
+    
+     
+    
+     
+    
+     
+    
+     
+    
 </main>
 
 <footer>
