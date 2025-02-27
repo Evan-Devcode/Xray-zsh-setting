@@ -191,38 +191,79 @@ kill &lt;PID&gt;</code></pre>
 
     <div class="step">
         <h2>7. Vim 使用指南</h2>
-        <ul>
-            <li><strong>创建文件</strong>：
-                <pre><code>touch 文件名
-mkdir 文件夹名
-vim 文件名</code></pre>
-            </li>
-            <li><strong>正常关闭 Vim</strong>：
-                <pre><code>:wq  # 保存并退出
-:q!  # 不保存退出
-:w   # 仅保存</code></pre>
-            </li>
-            <li><strong>修改只读文件</strong>：
-                <pre><code>sudo vim 文件名  # 使用 sudo 权限编辑
-:w !sudo tee %  # 强制保存</code></pre>
-            </li>
-            <li><strong>访问系统剪切板</strong>：
-                <pre><code># 查看 Vim 版本是否支持剪切板
-vim --version | grep clipboard
+        <ul><pre><code>设置行号（:set number）
+显示相对行号，方便基于当前行号跳转（:set relativenumber）
+高亮显示当前行（:set cursorline）
+强制保存： :w !sudo tee %</code></pre>
 
-# 安装 gVIM
-sudo apt-get install vim-gtk
+          <li>
+            <strong> vim 快速定位推荐流程：</strong>
+           <p>1. 滚动屏幕查找所需编辑内容</p>
+           <pre><code>            vim翻屏操作(gg/G)
+            Ctrl+f/b 整屏
+            Ctrl+d/u 半屏(推荐)
+            Ctrl+e/y 一行</code></pre>
 
-# 使用剪切板
-"+dd  # 剪切
-"+yy  # 复制
-Ctrl+Shift+V  # 粘贴（编辑模式）
-Shift+Insert  # 粘贴（通用）</code></pre>
+           <p>2. 移动光标至编辑处</p>
+           <pre><code>            number G
+            nubmber j/k</code></pre>
+
+           <p>3. 调整光标位置在屏幕上的位置</p>
+           <pre><code>            zt：将光标所在行移到屏幕顶部。(推荐)
+            zz：将光标所在行移到屏幕中央。
+            zb：将光标所在行移到屏幕底部。</code></pre>
+
+           <p>4. 行内移动光标</p>
+           <pre><code>            行内(A,I,0,^,$)、词(w,e,b)、字符(f,h,l)</code></pre>
+
+           <p>5. 开始编辑</p>
             </li>
+
+
+
+
+            <li><strong> vim 编辑操作推荐流程 </strong>：
+                <p>1. 查找所需编辑内容</p>
+                <pre><code>                    单词移动(f char)
+                    w：跳到下一个单词的开头。
+                    e：跳到当前单词的末尾。
+                    W：跳到下一个单词的开头（包括空格）。
+                 
+                    b：跳到上一个单词的开头。
+                    ge：跳到上一个单词的末尾。
+                    B：跳到上一个单词的开头（包括空格）。</code></pre>
+                
+                <p>2. 插入操作</p>
+                <pre><code>                    插入行(o/O,a,i)
+                    移动并插入(A,i)（推荐）</code></pre>
+
+                <p>3. 删除操作</p>
+                <pre><code>                    插入模式下删除(推荐)
+                    Ctrl+h/Ctrl+w/ctrl+u 向左删除字符/单词/行
+                    dele 向右删除
+                 </code></pre>
+
+                <pre><code>                    normal模式删除
+                    dd 删除整行
+                    dw 向左删除一个单词
+                    db 向右删除一个单词
+                    
+                    向右删除：使用 dw（删除到下一个单词开头），de（删除到当前单词末尾），d$（删除到行尾）等命令。
+                    向左删除：使用 db（删除到上一个单词开头），dge（删除到上一个单词末尾），d^（删除到行首）等命令。
+                    d + f char：删除从光标所在位置到指定字符 char（包括字符 char 本身）。
+                 </code></pre>
+                
+                <p>4. 复制粘贴</p>
+                <pre><code>                    普通模式下复制和粘贴：通过 yy, yw, p, P 等命令来进行文本操作。
+                    系统剪贴板复制和粘贴：通过 "+y 将文本复制到系统剪贴板，通过 "+p 将剪贴板内容粘贴到 Vim 中。</code></pre>
+
+
+             
+
+            
+            </li> 
+
         </ul>
-        <div class="note">
-            <p>注意：Vim 的剪切板支持需要安装 <code>vim-gtk</code> 或类似包。</p>
-        </div>
     </div>
 
     <div class="step">
@@ -256,17 +297,17 @@ Shift+Insert  # 粘贴（通用）</code></pre>
     </div>
 
     <div class="step">
-        <h2>9. 文件操作</h2>
+        <h2>9. 为普通用户增加sudo权限</h2>
         <ul>
-            <li><strong>复制文件</strong>：
-                <pre><code>cp &lt;源文件&gt; &lt;目标文件&gt;</code></pre>
+            <li><strong>在root用户下，为普通用户设置密码</strong>：
+                <pre><code>sudo passwd username                </code></pre>
             </li>
-            <li><strong>移动文件</strong>：
-                <pre><code>mv &lt;源文件&gt; &lt;目标文件&gt;</code></pre>
+            <li><strong>在root用户下，将普通用户加入到sudo组中</strong>：
+                <pre><code>usermod -aG sudo username                </code></pre>
             </li>
         </ul>
         <div class="note">
-            <p>注意：<code>mv</code> 命令也可以用于重命名文件。</p>
+            <p>注意：以后普通用户可以使用<code> sudo </code>权限了，但是需要输入密码</p>
         </div>
     </div>
 
